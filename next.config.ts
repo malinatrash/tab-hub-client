@@ -1,7 +1,15 @@
-import type { NextConfig } from "next";
+import { AlphaTabWebPackPlugin } from '@coderline/alphatab/webpack'
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+	webpack(config) {
+		config.plugins.push(
+			new AlphaTabWebPackPlugin({
+				assetOutputDir: 'public/alphatab',
+			})
+		)
+		return config
+	},
+}
 
-export default nextConfig;
+export default nextConfig
