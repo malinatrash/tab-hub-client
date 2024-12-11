@@ -1,3 +1,4 @@
+import { showToast } from '@/app/utils/showToast'
 import React, { useRef, useState } from 'react'
 import { Button } from '../ui/button'
 
@@ -13,6 +14,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ onFileSelected }) => {
 
 	const startRecording = async () => {
 		if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+			showToast('Ошибка', 'Браузер не поддерживает запись аудио', 'destructive')
 			alert('Ваш браузер не поддерживает запись аудио.')
 			return
 		}

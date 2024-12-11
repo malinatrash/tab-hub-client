@@ -104,7 +104,7 @@ const TabRenderer: FC<TabRendererProps> = ({ midiData }) => {
 		// Создаем строки для каждой струны гитары
 		const strings = Array(6)
 			.fill('')
-			.map(() => '-'.repeat(90)) // длина строки настраивается
+			.map(() => '–'.repeat(90)) // длина строки настраивается
 
 		midiData.forEach(note => {
 			const stringFret = getStringFret(note.name)

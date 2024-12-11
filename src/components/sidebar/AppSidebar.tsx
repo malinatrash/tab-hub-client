@@ -41,8 +41,8 @@ export function AppSidebar() {
 			<SidebarContent className='h-full'>
 				<SidebarGroup className='h-full'>
 					<div className='my-4'>
-						<span className='text-5xl flex flex-nowrap items-center gap-4 justify-start'>
-							<Guitar className='w-12 h-12' /> Ez Tabz
+						<span className='text-5xl flex flex-nowrap items-center gap-4 justify-center'>
+							<img className='h-12' src="https://purepng.com/public/uploads/large/purepng.com-electric-guitarelectric-guitarsteelstringselectricalblackredyellow-1421526494112bsvat.png" alt="" /> TabHub
 						</span>
 					</div>
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
