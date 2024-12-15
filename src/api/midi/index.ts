@@ -1,4 +1,4 @@
-import { showToast } from '@/app/utils/showToast'
+import { showToast } from '@/utils/showToast'
 
 export const generateMidi = async (file: File) => {
 	const formData = new FormData()

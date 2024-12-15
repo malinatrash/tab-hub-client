@@ -1,18 +1,23 @@
 'use client'
 
-import React, { useState, useCallback, useRef, use } from 'react'
+import React, { useState, useCallback, useRef, FC } from 'react'
 import { Textarea } from '@/components/ui/textarea'
 import { useProjectState } from '@/hooks/useProjectState'
 import { useWebSocket } from '@/hooks/useWebSocket'
 
-export default function ProjectPage({ params }: { params: { id: string } }) {
-  const { id } = use(params)
+interface ProjectPageProps {
+  params: {
+    id: string
+  }
+}
+
+const ProjectPage: FC<ProjectPageProps> = (props: ProjectPageProps) => {
   const timeoutRef = useRef<NodeJS.Timeout>()
 
   const { 
     projectState, 
     updateProjectStateField 
-  } = useProjectState(id)
+  } = useProjectState(props.params.id)
 
   const handleWebSocketMessage = useCallback((message: string) => {
     try {
@@ -21,12 +26,12 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         updateProjectStateField('state', parsedMessage.state)
       }
     } catch (error) {
-      // If parsing fails, treat it as a raw state update
       updateProjectStateField('state', message)
     }
   }, [updateProjectStateField])
 
-  const { sendMessage } = useWebSocket(`ws://localhost:8000/projects/${id}/ws`,  handleWebSocketMessage)
+  const projectId = props.params.id;
+  const { sendMessage } = useWebSocket(`ws://localhost:8001/projects/${projectId}/ws`,  handleWebSocketMessage)
 
   const handleStateChange = (newValue: string) => {
     if (timeoutRef.current) {
@@ -75,3 +80,5 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     </div>
   )
 }
+
+export default ProjectPage

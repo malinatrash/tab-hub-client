@@ -3,7 +3,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { Toaster } from '@/components/ui/toaster'
 import type { Metadata } from 'next'
 import { Raleway } from 'next/font/google'
-import './globals.css'
+import '@/styles/globals.css'
 
 const font = Raleway({ weight: '400' })
 

@@ -1,4 +1,4 @@
-import { showToast } from '@/app/utils/showToast'
+import { showToast } from '@/utils/showToast'
 import React, { useRef, useState } from 'react'
 import { Button } from '../ui/button'
 

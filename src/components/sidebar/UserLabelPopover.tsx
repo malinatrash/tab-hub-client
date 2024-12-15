@@ -1,4 +1,4 @@
-import { showToast } from '@/app/utils/showToast'
+import { showToast } from '@/utils/showToast'
 import { PersonIcon } from '@radix-ui/react-icons'
 import { LogOut, Sparkles, Wallet } from 'lucide-react'
 import { FC } from 'react'
