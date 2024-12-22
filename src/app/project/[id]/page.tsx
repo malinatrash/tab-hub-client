@@ -1,84 +1,87 @@
 'use client'
 
-import React, { useState, useCallback, useRef, FC } from 'react'
+import { projectsApi } from '@/api/projects'
 import { Textarea } from '@/components/ui/textarea'
-import { useProjectState } from '@/hooks/useProjectState'
 import { useWebSocket } from '@/hooks/useWebSocket'
+import { Project } from '@/types/Project'
+import { notFound, useParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-interface ProjectPageProps {
-  params: {
-    id: string
-  }
-}
+const ProjectPage = () => {
+	const params = useParams<{ id: string }>()
+	const [project, setProject] = useState<Project | null>(null)
+	const [loading, setLoading] = useState(true)
+	const [error, setError] = useState<string | null>(null)
 
-const ProjectPage: FC<ProjectPageProps> = (props: ProjectPageProps) => {
-  const timeoutRef = useRef<NodeJS.Timeout>()
+	const wsUrl = `ws://${process.env.NEXT_PUBLIC_SERVICE_URL}/projects/${params.id}`
 
-  const { 
-    projectState, 
-    updateProjectStateField 
-  } = useProjectState(props.params.id)
+	const { lastMessage, sendMessage, isConnected } = useWebSocket(wsUrl)
 
-  const handleWebSocketMessage = useCallback((message: string) => {
-    try {
-      const parsedMessage = JSON.parse(message)
-      if (parsedMessage && typeof parsedMessage === 'object' && 'state' in parsedMessage) {
-        updateProjectStateField('state', parsedMessage.state)
-      }
-    } catch (error) {
-      updateProjectStateField('state', message)
-    }
-  }, [updateProjectStateField])
+	useEffect(() => {
+		if (!params) {
+			notFound()
+		}
+		const projectId = parseInt(params.id, 10)
+		if (isNaN(projectId)) {
+			notFound()
+		}
 
-  const projectId = props.params.id;
-  const { sendMessage } = useWebSocket(`ws://localhost:8001/projects/${projectId}/ws`,  handleWebSocketMessage)
+		const fetchProject = async () => {
+			try {
+				const fetchedProject = await projectsApi.getProject(projectId)
+				setProject(fetchedProject)
+			} catch (err) {
+				console.error('Failed to fetch project', err)
+				setError('Failed to load project')
+			} finally {
+				setLoading(false)
+			}
+		}
 
-  const handleStateChange = (newValue: string) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
+		fetchProject()
+	}, [params.id])
 
-    timeoutRef.current = setTimeout(() => {
-      sendMessage(newValue)
-    }, 100)
+	// Update project state when WebSocket message is received
+	useEffect(() => {
+		if (lastMessage && project) {
+			setProject(prev => (prev ? { ...prev, state: lastMessage } : null))
+		}
+	}, [lastMessage])
 
-    updateProjectStateField('state', newValue)
-  }
+	const handleStateChange = (newState: string) => {
+		if (!project) return
 
-  if (!projectState) return <div>Загрузка...</div>
+		// Send state update via WebSocket
+		sendMessage(newState)
+	}
 
-  return (
-    <div className="container mx-auto p-4">
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-2xl font-bold mb-4">Состояние проекта: {projectState.name}</h2>
-        <div className="space-y-4">
-          <div>
-            <strong>ID проекта:</strong> {projectState.id}
-          </div>
-          <div>
-            <strong>Статус:</strong>{' '}
-            <span 
-              className={`px-2 py-1 rounded ${
-                projectState.private 
-                  ? 'bg-red-500 text-white' 
-                  : 'bg-green-500 text-white'
-              }`}
-            >
-              {projectState.private ? 'Приватный' : 'Публичный'}
-            </span>
-          </div>
-          <div>
-            <strong>Состояние проекта:</strong>
-            <Textarea 
-              value={projectState.state || ''} 
-              onChange={(e) => handleStateChange(e.target.value)}
-              placeholder="Введите состояние проекта"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+	if (loading) return <div>Loading...</div>
+	if (error) return <div>Error: {error}</div>
+	if (!project) return <div>No project found</div>
+
+	return (
+		<div className='container mx-auto p-4'>
+			<div className='bg-white shadow-md rounded-lg p-6'>
+				<h2 className='text-2xl font-bold mb-4'>
+					Состояние проекта: {project.name}
+				</h2>
+				<div className='space-y-4'>
+					<div>
+						<strong>ID проекта:</strong> {project.id}
+					</div>
+
+					<div>
+						<strong>Состояние проекта:</strong>
+						<Textarea
+							value={project.state}
+							onChange={e => handleStateChange(e.target.value)}
+							placeholder='Введите состояние проекта'
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
 }
 
 export default ProjectPage

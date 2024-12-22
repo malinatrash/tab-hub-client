@@ -1,29 +1,27 @@
-import { showToast } from '@/utils/showToast'
+import { apiClient } from '@/api/client'
+import { AxiosResponse } from 'axios'
 
-export const generateMidi = async (file: File) => {
-	const formData = new FormData()
-	formData.append('file', file)
+export const midiApi = {
+	async generateMidi(file: File): Promise<Blob> {
+		const formData = new FormData()
+		formData.append('file', file)
 
-	try {
-		const response = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}/generate/midi`,
-			{
-				method: 'POST',
-				body: formData,
-			}
-		)
-
-		if (!response.ok) {
-			showToast(
-				'Ошибка',
-				'Не удалось сгенерировать MIDI. Пожалуйста, попробуйте еще раз.',
-				'destructive'
+		try {
+			const response: AxiosResponse<Blob> = await apiClient.post(
+				'generator',
+				'/generate/midi',
+				formData,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data',
+					},
+					responseType: 'blob',
+				}
 			)
-			throw new Error('Не удалось сгенерировать MIDI')
+			return response.data
+		} catch (error) {
+			console.error('MIDI Generation Error:', error)
+			throw error
 		}
-		return response
-	} catch (error) {
-		showToast('Ошибка', String(error), 'destructive')
-		console.error('Ошибка:', error)
-	}
+	},
 }

@@ -1,13 +1,5 @@
 'use client'
-import {
-	FileMusic,
-	Guitar,
-	Home,
-	Inbox,
-	Music,
-	Search,
-	Settings,
-} from 'lucide-react'
+import { FileMusic, Guitar, Home } from 'lucide-react'
 
 import {
 	Sidebar,
@@ -22,17 +14,17 @@ import {
 import UserLabel from './UserLabel'
 
 // Menu items.
-const items = [
-	{ title: 'Home', url: '/', icon: Home },
-	{ title: 'Search', url: '/#search', icon: Search },
-	{ title: 'Inbox', url: '/#inbox', icon: Inbox },
-	{ title: 'Settings', url: '/#settings', icon: Settings },
-]
+const items = [{ title: 'Home', url: '/', icon: Home }]
 
 // Generation items.
 const generationItems = [
-	{ title: 'Audio -> MIDI', url: '/#audio-to-midi', icon: Music },
-	{ title: 'Audio -> Tabs', url: '/#audio-to-tabs', icon: FileMusic },
+	{ title: 'Tab Generator', url: '/tab-generator', icon: FileMusic },
+]
+
+// Projects items
+const projectsItems = [
+	{ title: 'My Projects', url: '/project', icon: Guitar },
+	{ title: 'Create Project', url: '/project/create', icon: Guitar },
 ]
 
 export function AppSidebar() {
@@ -41,8 +33,8 @@ export function AppSidebar() {
 			<SidebarContent className='h-full'>
 				<SidebarGroup className='h-full'>
 					<div className='my-4'>
-						<span className='text-5xl flex flex-nowrap items-center gap-4 justify-center'>
-							<img className='h-12' src="https://purepng.com/public/uploads/large/purepng.com-electric-guitarelectric-guitarsteelstringselectricalblackredyellow-1421526494112bsvat.png" alt="" /> TabHub
+						<span className='text-5xl flex italic font-extralight flex-nowrap items-center gap-4 justify-center'>
+							TabHub
 						</span>
 					</div>
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -66,6 +58,22 @@ export function AppSidebar() {
 							<SidebarGroupLabel className='mt-4'>Generation</SidebarGroupLabel>
 							<SidebarMenu>
 								{generationItems.map(item => (
+									<SidebarMenuItem key={item.title}>
+										<SidebarMenuButton asChild>
+											<a
+												href={item.url}
+												className='flex items-center space-x-2'
+											>
+												<item.icon />
+												<span>{item.title}</span>
+											</a>
+										</SidebarMenuButton>
+									</SidebarMenuItem>
+								))}
+							</SidebarMenu>
+							<SidebarGroupLabel className='mt-4'>Projects</SidebarGroupLabel>
+							<SidebarMenu>
+								{projectsItems.map(item => (
 									<SidebarMenuItem key={item.title}>
 										<SidebarMenuButton asChild>
 											<a
