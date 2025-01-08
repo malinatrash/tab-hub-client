@@ -7,12 +7,12 @@ import Loader from '@/components/ui/loader'
 import { showToast } from '@/utils/showToast'
 import { Midi } from '@tonejs/midi'
 import { useState } from 'react'
+import {Note} from "@/types/Note";
 
 export default function TabGenerator() {
 	const [file, setFile] = useState<File | null>(null)
-	const [midiData, setMidiData] = useState<any[]>([])
+	const [midiData, setMidiData] = useState<Note[]>([])
 	const [loading, setLoading] = useState(false)
-	const [midiUrl, setMidiUrl] = useState<string>('')
 
 	const handleFileSelected = (selectedFile: File) => {
 		setFile(selectedFile)
@@ -30,7 +30,7 @@ export default function TabGenerator() {
 		setLoading(true)
 
 		try {
-			let midiBlob = await midiApi.generateMidi(file)
+			const midiBlob = await midiApi.generateMidi(file)
 			if (!midiBlob) {
 				showToast('Ошибка', 'Не удалось получить MIDI Blob', 'destructive')
 				throw new Error('Не удалось получить MIDI Blob')
@@ -62,10 +62,10 @@ export default function TabGenerator() {
 			<form className='flex flex-col gap-4' onSubmit={handleSubmit}>
 				<AudioUploader onFileSelected={handleFileSelected} />
 				<Button type='submit'>
-					Generate MIDI from File <Loader shown={loading} />
+					Generate <Loader shown={loading} />
 				</Button>
 			</form>
-			<div className='mt-8'>
+			<div className='p-4 mt-6'>
 				<MidiViewer midiData={midiData} />
 			</div>
 		</div>
